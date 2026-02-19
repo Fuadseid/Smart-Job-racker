@@ -14,9 +14,10 @@ const registerUser = async (userData)=>{
 
 const loginUser = async (email,password)=>{
     const Userrecord = await user.findOne({email});
-    if(!Userrecord){
+    if(!Userrecord|| !(await Userrecord.isPasswordMatch(password))){
         throw new ApiError(httpStatus.status.UNAUTHORIZED,"Invalid email or password")
     }
+    return Userrecord;
 }
 
 module.exports = {
