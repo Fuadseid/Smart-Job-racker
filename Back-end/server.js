@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const httpStatus = require("http-status");
 const ApiError = require("./utils/ApiError");
 const config = require("./configs/config");
+const router = require("./routes/main.route");
 mongoose
   .connect(config.dbConnection, {})
   .then(() => {
@@ -12,6 +13,7 @@ mongoose
     new ApiError(httpStatus.status.INTERNAL_SERVER_ERROR, "Mongoose server connection failed", true, err.stack);
   });
 
+app.use(router);
 app.listen(config.port, () => {
   console.log(`server is running on port ${config.port}`);
 });
