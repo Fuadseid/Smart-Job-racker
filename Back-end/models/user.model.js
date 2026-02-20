@@ -46,6 +46,10 @@ const userSchema = new mongoose.Schema(
         }
       },
     },
+    emailverifiedat:{
+      type:Date,
+      default:null,
+    }
   },
   { timestamps: true },
 );
