@@ -23,9 +23,19 @@ const userSchema = new mongoose.Schema(
         }
       },
     },
+    provider: {
+      type: String,
+      enum: ["local", "google"],
+      default: "local",
+    },
+    googleId: {
+      type: String,
+    },
     password: {
       type: String,
-      required: true,
+      required: function () {
+        return this.provider === "local";
+      },
       minlength: 6,
       validate(value) {
         if (!validator.isStrongPassword(value)) {

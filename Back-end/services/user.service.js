@@ -19,8 +19,6 @@ const getUserByEmail = async (email)=>{
 }
 
 module.exports ={
-    registerUser,
-    loginUser,
     getUserById,
     getUserByEmail
 }

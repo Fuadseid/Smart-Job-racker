@@ -21,5 +21,9 @@ module.exports = {
         secret:value.JWT_SECRET,
         accessTokenExpiry:value.ACCESS_TOKEN_EXPIRY,
         refreshTokenExpiry:value.REFRESH_TOKEN_EXPIRY,
+    },
+    google:{
+        clientId:value.GOOGLE_CLIENT_ID,
+        clientSecret:value.GOOGLE_CLIENT_SECRET
     }
 }

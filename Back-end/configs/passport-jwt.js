@@ -2,10 +2,11 @@ const { Strategy: jwtStrategy, ExtractJwt } = require("passport-jwt");
 const httpStatus = require("http-status");
 const { tokenTypes } = require("./token");
 const UserService = require("../services/user.service");
+const config = require("./config");
 const ApiError = require("../utils/ApiError");
 
 const jwtOptions = {
-  secretOrKey: process.env.JWT_SECRET,
+  secretOrKey: config.jwt.secret,
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
 };
 
