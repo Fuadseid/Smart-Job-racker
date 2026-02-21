@@ -1,5 +1,6 @@
 "use client";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { authenticationEndpoints } from "./endPoints/authenticationEndpoints";
 import { RootState } from "./store";
 export const apiSlice = createApi({
   reducerPath: "user",
@@ -20,8 +21,11 @@ export const apiSlice = createApi({
       return headers;
     },
   }),
-  endpoints: (builder) => ({}),
+  endpoints: (builder) => ({
+    ...authenticationEndpoints(builder)
+  }),
 });
 
 export const {
+  useGetCsrfTokenQuery
 } = apiSlice;

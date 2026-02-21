@@ -1,14 +1,11 @@
-import { useGetCsrfTokenQuery } from "@/stores/apiSlice";
-import { setCSRFToken } from "@/stores/authReducer";
+import { useGetCsrfTokenQuery } from "@/store/apiSlice";
+import { setCSRFToken } from "@/store/authReducer";
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { initClarity } from "@/utils/clarity";
 const WrapperComponent = ({ children }) => {
     const dispatch = useDispatch()
     const { data: token , isLoading: loading, isSuccess } = useGetCsrfTokenQuery();
-    useEffect(() => {
-        initClarity();
-    }, []);
+
     useEffect(()=>{
         const csrf_token = token?.csrf_token;
         if(csrf_token){
