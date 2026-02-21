@@ -1,6 +1,10 @@
+// home.tsx or page.tsx
 import Image from "next/image";
 import { Geist, Geist_Mono } from "next/font/google";
-import Navbar from "@/pagecomponents/Navbar"
+import HomePage from "@/pagecomponents/HomePage";
+import Dashboard from "@/pagecomponents/Dashboard";
+
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -13,10 +17,9 @@ const geistMono = Geist_Mono({
 
 export default function Home() {
   return (
-    <div
-      className={`${geistSans.className} ${geistMono.className} flex min-h-screen items-center justify-center  font-sans bg-black`}
-    >
-    <Navbar/>
+    <div className={`${geistMono.className}  bg-black h-screen font-sans w-full`}>
+     <HomePage/>
+    {/*  <Dashboard/> */}
     </div>
   );
 }
