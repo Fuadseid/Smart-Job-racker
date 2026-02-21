@@ -1,9 +1,48 @@
 import Navbar from "@/components/Navbar";
+import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 function HomePage() {
+  const [text, setText] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [loopNum, setLoopNum] = useState(0);
+  const [typingSpeed, setTypingSpeed] = useState(150);
+
+  const words = ["Job", "Career"];
+  const period = 2000;
+
+  useEffect(() => {
+    let timer;
+
+    const handleTyping = () => {
+      const i = loopNum % words.length;
+      const fullText = words[i];
+
+      setText((current) =>
+        isDeleting
+          ? fullText.substring(0, current.length - 1)
+          : fullText.substring(0, current.length + 1),
+      );
+
+      if (!isDeleting && text === fullText) {
+        setTimeout(() => setIsDeleting(true), period);
+      } else if (isDeleting && text === "") {
+        setIsDeleting(false);
+        setLoopNum(loopNum + 1);
+      }
+
+      setTypingSpeed(isDeleting ? 100 : 150);
+    };
+
+    timer = setTimeout(handleTyping, typingSpeed);
+
+    return () => clearTimeout(timer);
+  }, [text, isDeleting, loopNum, typingSpeed, words]);
+
   return (
-    <div className="bg-black min-h-screen">
+    <div id="home" className="bg-black min-h-screen">
       <nav className="fixed top-0 w-full z-50">
         <Navbar />
       </nav>
@@ -14,7 +53,12 @@ function HomePage() {
           <h1 className="text-5xl font-bold leading-tight">
             Track Your
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-gray-300 to-white">
-              Dream Job
+            Dream
+              <span className="text-cyan-300">
+                {" "}
+                {text}
+                <span className="animate-pulse ml-1 text-cyan-300">|</span>
+              </span>
             </span>
           </h1>
 
@@ -24,15 +68,15 @@ function HomePage() {
           </p>
 
           <div className="flex space-x-4">
-            <button className="bg-white text-black px-6 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors">
-              Get Started
-            </button>
-            <button className="border border-gray-700 text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-900 transition-colors">
+            <Link href="/login">
+              <Button className="bg-[var(--buttonbg)] cursor-pointer  text-white px-6 py-6 rounded-3xl font-medium hover:bg-[var(--hoverbtnbg)] transition-colors">
+                Get Started
+              </Button>
+            </Link>
+            <Button className="border  cursor-pointer  text-white px-6 py-6 rounded-lg font-medium hover:bg-gray-900 transition-colors">
               Learn More
-            </button>
+            </Button>
           </div>
-
-         
         </div>
 
         {/* Right side - Image with shadow gradients */}
@@ -44,11 +88,10 @@ function HomePage() {
           {/* Main image container with shadow */}
           <div className="relative">
             <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent rounded-2xl z-10"></div>
-            <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-black/50 rounded-2xl z-10"></div>
 
             {/* Image with drop shadow */}
             <Image
-              src="/home.jpg"
+              src="/dashbord.jpg"
               width={500}
               height={200}
               alt="Home illustration"

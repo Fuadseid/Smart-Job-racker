@@ -3,6 +3,9 @@ import Image from "next/image";
 import { Geist, Geist_Mono } from "next/font/google";
 import HomePage from "@/pagecomponents/HomePage";
 import Dashboard from "@/pagecomponents/Dashboard";
+import HowItWorks from "@/pagecomponents/How";
+import SmartJobTracker from "@/pagecomponents/SmartJobTracker";
+import { Footer } from "@/components/Footer";
 
 
 const geistSans = Geist({
@@ -19,6 +22,9 @@ export default function Home() {
   return (
     <div className={`${geistMono.className}  bg-black h-screen font-sans w-full`}>
      <HomePage/>
+     <HowItWorks/>
+     <SmartJobTracker/>
+     <Footer/>
     {/*  <Dashboard/> */}
     </div>
   );
