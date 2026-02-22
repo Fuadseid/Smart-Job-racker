@@ -20,7 +20,7 @@ const MENU_ITEMS = [
   { label: "Home", href: "/", id: "home" },
   { label: "How it works", href: "/how-it-works", id: "how" },
   { label: "Job  Track", href: "/smart", id: "smart" },
-  { label: "Contact", href: "/contact", id: "contact" },
+  { label: "Contact", href: "/contact", id: "contact", isLink: true },
   {
     label: "Get Started",
     href: "/login",
@@ -143,7 +143,7 @@ function Navbar() {
               className={`
                 relative z-10 transition-all duration-300
                 ${
-                  activeItem === item.label && !item.isButton
+                  activeItem === item.label && !item.isButton 
                     ? "text-cyan-300"
                     : "text-white group-hover:text-cyan-300"
                 }
@@ -159,8 +159,12 @@ function Navbar() {
                     <ArrowRight className="inline-block ml-2 transition-all duration-300 group-hover:translate-x-1 group-hover:scale-110" />
                   </Button>
                 </Link>
-              ) : (
+              ) : !item.isLink ? (
                 item.label
+              ) : (
+                <Link href={item.href}>
+                  {item.label}
+                </Link>
               )}
             </span>
 
