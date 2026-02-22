@@ -1,5 +1,7 @@
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { Geist, Geist_Mono } from "next/font/google";
+
 import {
   Card,
   CardContent,
@@ -15,14 +17,17 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import Link from "next/link"
-
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
 export function SignupForm({
   className,
   ...props
 }) {
   return (
     <div className={cn("flex  flex-col gap-6", className)} {...props}>
-      <Card className="bg-cyan-950/20 text-white">
+      <Card className={` ${geistMono.className} bg-cyan-950/20 text-white`}>
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Create your account</CardTitle>
           <CardDescription>
