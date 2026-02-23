@@ -2,6 +2,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { authenticationEndpoints } from "./endPoints/authenticationEndpoints";
 import { RootState } from "./store";
+import { contactEndpoints } from "./endPoints/contactEndpoints";
 export const apiSlice = createApi({
   reducerPath: "user",
   baseQuery: fetchBaseQuery({
@@ -22,10 +23,12 @@ export const apiSlice = createApi({
     },
   }),
   endpoints: (builder) => ({
-    ...authenticationEndpoints(builder)
+    ...authenticationEndpoints(builder),
+    ...contactEndpoints(builder)
   }),
 });
 
 export const {
-  useGetCsrfTokenQuery
+  useGetCsrfTokenQuery,
+  useCreateConrtactMutation
 } = apiSlice;

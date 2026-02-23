@@ -5,6 +5,9 @@ const httpStatus = require("http-status");
 const ApiError = require("./utils/ApiError");
 const config = require("./configs/config");
 const router = require("./routes/main.route");
+const cors = require("cors");
+
+app.use(cors());
 mongoose
   .connect(config.dbConnection, {})
   .then(() => {
