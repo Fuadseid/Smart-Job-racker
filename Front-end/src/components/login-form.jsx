@@ -12,6 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import Image from "next/image";
+import Router from "next/router";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -21,7 +22,16 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
+
 export function LoginForm({ className, ...props }) {
+const navigate = Router;
+
+  const handleLogin =(e)=>{
+  e.preventDefault();
+  navigate.push("/dashboard");
+  
+
+}
   return (
     <div
       className={cn(
@@ -59,7 +69,7 @@ export function LoginForm({ className, ...props }) {
             />
           </Field>
           <Field>
-            <Button type="submit" className="w-full">
+            <Button className="bg-[var(--buttonbg)] hover:bg-[var(--buttonbg)]/50 cursor-pointer w-full text-white" type="submit" onClick={handleLogin}>
               Login
             </Button>
           </Field>

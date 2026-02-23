@@ -17,6 +17,8 @@ module.exports = {
     port: value.PORT,
     dbConnection: value.DB_CONNECTION,
     nodeEnv: value.NODE_ENV,
+    email:value.EMAIL,
+    emailpassword:value.EMAIL_PASSWORD,
     jwt:{
         secret:value.JWT_SECRET,
         accessTokenExpiry:value.ACCESS_TOKEN_EXPIRY,

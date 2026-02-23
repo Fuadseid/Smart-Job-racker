@@ -21,11 +21,11 @@ const geistMono = Geist_Mono({
 export default function Home() {
   return (
     <div className={`${geistMono.className}  bg-black h-screen font-sans w-full`}>
-    {/*  <HomePage/>
-     <HowItWorks/>
-     <SmartJobTracker/>
-     <Footer/> */}
-     <Dashboard/>
+      <HomePage/>
+      <HowItWorks/>
+      <SmartJobTracker/>
+      <Footer/>
+    {/*  <Dashboard/> */}
     </div>
   );
 }

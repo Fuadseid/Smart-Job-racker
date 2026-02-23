@@ -5,6 +5,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Button } from "./ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,12 +20,12 @@ const geistMono = Geist_Mono({
 const MENU_ITEMS = [
   { label: "Home", href: "/", id: "home" },
   { label: "How it works", href: "/how-it-works", id: "how" },
-  { label: "Job  Track", href: "/smart", id: "smart" },
+  { label: "Job Track", href: "/smart", id: "smart" },
   { label: "Contact", href: "/contact", id: "contact", isLink: true },
   {
     label: "Get Started",
     href: "/login",
-    id: "login", // Changed to match your login ID
+    id: "login",
     isButton: true,
   },
 ];
@@ -34,6 +35,7 @@ function Navbar() {
   const [activeItem, setActiveItem] = useState("Home");
   const [scrolled, setScrolled] = useState(false);
   const menuRef = useRef(null);
+  const router = useRouter();
   const openMenu = () => setIsOpen(!isOpen);
 
   // Handle scroll effect
@@ -70,13 +72,17 @@ function Navbar() {
     };
   }, [isOpen]);
 
-  // Update active section based on scroll position
+  // Update active section based on scroll position (only for non-link items)
   useEffect(() => {
+    // Only run scroll spy on homepage where sections exist
+    if (router.pathname !== "/") return;
+
     const handleScrollSpy = () => {
-      const sections = MENU_ITEMS.map((item) => ({
-        id: item.id,
-        label: item.label,
-      }));
+      const sections = MENU_ITEMS.filter(item => !item.isLink && !item.isButton)
+        .map((item) => ({
+          id: item.id,
+          label: item.label,
+        }));
 
       // Find the current section in viewport
       for (const section of sections) {
@@ -96,25 +102,39 @@ function Navbar() {
     handleScrollSpy(); // Initial check
 
     return () => window.removeEventListener("scroll", handleScrollSpy);
-  }, []);
+  }, [router.pathname]);
+
+  // Update active item based on route for link items
+  useEffect(() => {
+    const currentPath = router.pathname;
+    const matchingItem = MENU_ITEMS.find(item => item.href === currentPath);
+    if (matchingItem) {
+      setActiveItem(matchingItem.label);
+    }
+  }, [router.pathname]);
 
   const handleNavigation = (item) => {
     setActiveItem(item.label);
     setIsOpen(false);
 
-    // Smooth scroll to section
-    const element = document.getElementById(item.id);
-    if (element) {
-      const yOffset = -100; // Offset to account for fixed navbar
-      const y =
-        element.getBoundingClientRect().top + window.pageYOffset + yOffset;
-
-      window.scrollTo({
-        top: y,
-        behavior: "smooth",
-      });
+    if (item.isLink || item.isButton) {
+      // For link and button items, use Next.js router navigation
+      router.push(item.href);
     } else {
-      console.warn(`Element with id "${item.id}" not found`);
+      // For section items, smooth scroll to the section
+      const element = document.getElementById(item.id);
+      if (element) {
+        const yOffset = -100; // Offset to account for fixed navbar
+        const y =
+          element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+
+        window.scrollTo({
+          top: y,
+          behavior: "smooth",
+        });
+      } else {
+        console.warn(`Element with id "${item.id}" not found`);
+      }
     }
   };
 
@@ -150,25 +170,16 @@ function Navbar() {
               `}
             >
               {item.isButton ? (
-                <Link
-                  href={item.href}
-                  className="text-white hover:text-cyan-300"
-                >
-                  <Button className="bg-[var(--buttonbg)] cursor-pointer text-white px-10 py-6 rounded-3xl font-medium hover:bg-[var(--hoverbtnbg)] transition-all duration-300 group">
-                    {item.label}
-                    <ArrowRight className="inline-block ml-2 transition-all duration-300 group-hover:translate-x-1 group-hover:scale-110" />
-                  </Button>
-                </Link>
-              ) : !item.isLink ? (
-                item.label
-              ) : (
-                <Link href={item.href}>
+                <Button className="bg-[var(--buttonbg)] cursor-pointer text-white px-10 py-6 rounded-3xl font-medium hover:bg-[var(--hoverbtnbg)] transition-all duration-300 group">
                   {item.label}
-                </Link>
+                  <ArrowRight className="inline-block ml-2 transition-all duration-300 group-hover:translate-x-1 group-hover:scale-110" />
+                </Button>
+              ) : (
+                item.label
               )}
             </span>
 
-            {/* Animated underline (only for non-button items) */}
+            {/* Animated underline for all non-button items (including links) */}
             {!item.isButton && (
               <span
                 className={`

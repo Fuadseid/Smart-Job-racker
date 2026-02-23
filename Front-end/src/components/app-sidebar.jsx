@@ -176,6 +176,9 @@ export function AppSidebar({ ...props }) {
     // using your router (next/router, react-router, etc.)
   };
 
+  // Base hover/focus/active styles using your primary color
+  const interactionStyles = "hover:bg-[var(--buttonbg)] focus:bg-[var(--buttonbg)] active:bg-[var(--buttonbg)] data-[state=open]:bg-[var(--buttonbg)] data-[state=active]:bg-[var(--buttonbg)]";
+
   return (
     <Sidebar
       {...props}
@@ -184,14 +187,18 @@ export function AppSidebar({ ...props }) {
       <SidebarHeader className="border-b border-gray-800 bg-black">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild>
-              <a href="#" className="text-white hover:text-white">
+            <SidebarMenuButton 
+              className={`${interactionStyles}`} 
+              size="lg" 
+              asChild
+            >
+              <a href="/" className="text-white hover:text-white">
                 <div className="bg-gray-800 text-white flex aspect-square size-8 items-center justify-center rounded-lg">
                   <GalleryVerticalEnd className="size-4" />
                 </div>
                 <div className="flex flex-col gap-0.5 leading-none">
-                  <span className="font-medium text-white">Documentation</span>
-                  <span className="text-gray-400">v1.0.0</span>
+                  <span className="font-medium text-white">SiraNet</span>
+                  <span className="">v1.0.0</span>
                 </div>
               </a>
             </SidebarMenuButton>
@@ -218,9 +225,10 @@ export function AppSidebar({ ...props }) {
                     >
                       <CollapsibleTrigger asChild>
                         <SidebarMenuButton 
-                          className={`text-gray-300 hover:text-white hover:bg-gray-800 data-[state=open]:text-white ${
-                            isActive ? "bg-gray-800 text-white" : ""
+                          className={`text-gray-300 ${interactionStyles} ${
+                            isActive ? "bg-[var(--buttonbg)] text-white" : ""
                           }`}
+                          style={isActive ? { backgroundColor: 'var(--buttonbg)' } : {}}
                         >
                           <span>{Icon && <Icon className="size-4" />}</span>
                           {item.title}{" "}
@@ -235,9 +243,10 @@ export function AppSidebar({ ...props }) {
                               <SidebarMenuSubButton
                                 asChild
                                 isActive={isUrlActive(subItem.url)}
-                                className={`text-gray-400 hover:text-white hover:bg-gray-800 ${
-                                  isUrlActive(subItem.url) ? "bg-gray-800 text-white" : ""
+                                className={`text-gray-400 ${interactionStyles} ${
+                                  isUrlActive(subItem.url) ? "text-white" : ""
                                 }`}
+                                style={isUrlActive(subItem.url) ? { backgroundColor: 'var(--buttonbg)' } : {}}
                                 onClick={() => handleItemClick(subItem.url)}
                               >
                                 <a href={subItem.url}>{subItem.title}</a>
@@ -251,9 +260,10 @@ export function AppSidebar({ ...props }) {
                     // Render regular menu button for items without children
                     <SidebarMenuButton 
                       asChild
-                      className={`text-gray-300 hover:text-white hover:bg-gray-800 ${
-                        isUrlActive(item.url) ? "bg-gray-800 text-white" : ""
+                      className={`text-gray-300 ${interactionStyles} ${
+                        isUrlActive(item.url) ? "text-white" : ""
                       }`}
+                      style={isUrlActive(item.url) ? { backgroundColor: 'var(--buttonbg)' } : {}}
                       onClick={() => handleItemClick(item.url)}
                     >
                       <a href={item.url}>
