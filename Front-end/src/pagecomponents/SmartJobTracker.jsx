@@ -1,8 +1,15 @@
 'use client';
 
 import { Briefcase, Clock, FileText, BarChart3, CheckCircle2, Zap } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 export default function SmartJobTracker() {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const features = [
     {
       icon: Briefcase,
@@ -33,8 +40,51 @@ export default function SmartJobTracker() {
     'Increase success rate',
   ];
 
+  // Show a skeleton loader until mounted
+  if (!mounted) {
+    return (
+      <div id="smart" className="min-h-screen bg-black text-white">
+        <section className="px-6 py-20 md:py-32">
+          <div className="mx-auto max-w-7xl">
+            <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
+              {/* Left side skeleton */}
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                {[1, 2, 3, 4].map((index) => (
+                  <div
+                    key={index}
+                    className="rounded-2xl border border-gray-900 bg-gray-950 p-6"
+                  >
+                    <div className="mb-4 h-12 w-12 rounded-lg bg-gray-800 animate-pulse"></div>
+                    <div className="h-6 w-32 bg-gray-800 animate-pulse mb-2 rounded"></div>
+                    <div className="h-16 w-full bg-gray-800 animate-pulse rounded"></div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Right side skeleton */}
+              <div className="flex flex-col justify-center">
+                <div className="mb-8">
+                  <div className="h-12 w-3/4 bg-gray-800 animate-pulse mb-4 rounded"></div>
+                  <div className="h-24 w-full bg-gray-800 animate-pulse rounded"></div>
+                </div>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  {[1, 2, 3, 4].map((index) => (
+                    <div key={index} className="flex items-center gap-3">
+                      <div className="h-5 w-5 bg-gray-800 animate-pulse rounded"></div>
+                      <div className="h-5 w-24 bg-gray-800 animate-pulse rounded"></div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    );
+  }
+
   return (
-    <div id='smart' className="min-h-screen bg-black text-white">
+    <div id="smart" className="min-h-screen bg-black text-white">
       <section className="px-6 py-20 md:py-32">
         <div className="mx-auto max-w-7xl">
           <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">

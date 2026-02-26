@@ -16,7 +16,7 @@ export function Footer() {
     {
       label: 'Company',
       links: [
-        { name: 'About', href: '#' },
+        { name: 'About', href: 'about' },
         { name: 'Blog', href: '#' },
         { name: 'Careers', href: '#' },
         { name: 'Contact', href: '#' },
@@ -34,8 +34,8 @@ export function Footer() {
     {
       label: 'Legal',
       links: [
-        { name: 'Privacy', href: '#' },
-        { name: 'Terms', href: '#' },
+        { name: 'Privacy', href: 'policy' },
+        { name: 'Terms', href: 'terms' },
         { name: 'Cookies', href: '#' },
         { name: 'License', href: '#' },
       ],
@@ -43,10 +43,10 @@ export function Footer() {
   ];
 
   const socialLinks = [
-    { icon: Github, href: '#', label: 'GitHub' },
-    { icon: Linkedin, href: '#', label: 'LinkedIn' },
-    { icon: Twitter, href: '#', label: 'Twitter' },
-    { icon: Mail, href: '#', label: 'Email' },
+    { icon: Github, href: 'https://github.com/Fuadseid', label: 'GitHub' },
+    { icon: Linkedin, href: 'https://www.linkedin.com/in/fuad-seid-8b61322a9/', label: 'LinkedIn' },
+    { icon: Twitter, href: 'https://x.com/Fuad745164', label: 'Twitter' },
+    { icon: Mail, href: 'mailto:fuaddbus@gmail.com', label: 'Email' },
   ];
 
   return (
