@@ -13,6 +13,8 @@ import {
   ToolCase,
   User,
 } from "lucide-react";
+import { useRouter } from "next/router";
+import Link from "next/link";
 
 import { SearchForm } from "@/components/search-form";
 import {
@@ -44,163 +46,202 @@ const data = {
     },
     {
       title: "Applications",
-      url: "/applications",
+      url: "/dashboard/applications",
       icon: File,
     },
     {
       title: "Saved Jobs",
-      url: "/saved-jobs",
+      url: "/dashboard/saved-jobs",
       icon: Save,
     },
     {
       title: "Interviews",
-      url: "/interviews",
+      url: "/dashboard/interviews",
       icon: Mic,
     },
     {
       title: "Offers",
-      url: "/offers",
+      url: "/dashboard/offers",
       icon: BadgeDollarSign,
     },
     {
       title: "Tracking",
-      url: "/tracking",
+      url: "/dashboard/tracking",
       icon: ChartBar,
       items: [
         {
           title: "Job Pipeline",
-          url: "/tracking/pipeline",
+          url: "/dashboard/tracking/pipeline",
         },
         {
           title: "Application Status",
-          url: "/tracking/status",
+          url: "/dashboard/tracking/status",
         },
         {
           title: "Notes",
-          url: "/tracking/notes",
+          url: "/dashboard/tracking/notes",
         },
         {
           title: "Activity Log",
-          url: "/tracking/activity",
+          url: "/dashboard/tracking/activity",
         }
       ],
     },
     {
       title: "Tools",
-      url: "/tools",
+      url: "/dashboard/tools",
       icon: ToolCase,
       items: [
         {
           title: "Resume Manager",
-          url: "/tools/resume",
+          url: "/dashboard/tools/resume",
         },
         {
           title: "Cover Letters",
-          url: "/tools/cover-letters",
-          isActive: true,
+          url: "/dashboard/tools/cover-letters",
         },
         {
           title: "Documents",
-          url: "/tools/documents",
+          url: "/dashboard/tools/documents",
         },
-        
       ],
     },
     {
       title: "Insights",
-      url: "/insights",
+      url: "/dashboard/insights",
       icon: Eye,
       items: [
         {
           title: "Analytics",
-          url: "/insights/analytics",
+          url: "/dashboard/insights/analytics",
         },
         {
           title: "Progress Report",
-          url: "/insights/progress",
+          url: "/dashboard/insights/progress",
         },
         {
           title: "Weekly Summary",
-          url: "/insights/weekly",
+          url: "/dashboard/insights/weekly",
         },
       ],
     },
     {
       title: "Account",
-      url: "/account",
+      url: "/dashboard/account",
       icon: User,
       items: [
         {
           title: "Profile",
-          url: "/account/profile",
+          url: "/dashboard/account/profile",
         },
         {
           title: "Settings",
-          url: "/account/settings",
+          url: "/dashboard/account/settings",
         },
         {
           title: "Logout",
-          url: "/account/logout",
+          url: "/dashboard/account/logout",
         },
       ],
     },
-    
   ],
 };
 
 export function AppSidebar({ ...props }) {
-  // Track active item - in a real app, this would come from your router
-  const [activeItem, setActiveItem] = React.useState(() => {
-    // You can initialize this based on current path
-    // For demo, let's set Dashboard as active
-    return "/dashboard";
-  });
+  const router = useRouter();
+  const [openCollapsibles, setOpenCollapsibles] = React.useState({});
 
-  // Function to check if an item or its children are active
-  const isItemActive = (item, itemUrl) => {
-    if (itemUrl === activeItem) return true;
+  // Function to check if a specific URL is exactly active
+  const isUrlExactlyActive = (url) => {
+    return router.pathname === url;
+  };
+
+  // Function to check if a parent should be highlighted (when on a child route)
+  const isParentActive = (item) => {
+    if (!item.items) return false;
+    
+    // Check if any child is active
+    return item.items.some(subItem => router.pathname === subItem.url) ||
+           (router.pathname.startsWith(item.url + "/") && item.url !== "/dashboard");
+  };
+
+  // Function to determine if an item should be active
+  const isItemActive = (item) => {
     if (item.items) {
-      return item.items.some(subItem => subItem.url === activeItem);
+      // For items with children, highlight if on the exact URL or if parent of current route
+      return isUrlExactlyActive(item.url) || isParentActive(item);
+    } else {
+      // For items without children, only highlight on exact match
+      return isUrlExactlyActive(item.url);
     }
-    return false;
   };
 
-  // Function to check if a specific URL is active
-  const isUrlActive = (url) => {
-    return activeItem === url;
+  // Automatically open collapsibles that contain active items
+  React.useEffect(() => {
+    const newOpenState = {};
+    
+    data.navMain.forEach((item) => {
+      if (item.items) {
+        const hasActiveChild = item.items.some(
+          subItem => router.pathname === subItem.url
+        ) || (router.pathname.startsWith(item.url + "/") && item.url !== "/dashboard");
+        
+        if (hasActiveChild) {
+          newOpenState[item.title] = true;
+        }
+      }
+    });
+    
+    setOpenCollapsibles(prev => ({
+      ...prev,
+      ...newOpenState
+    }));
+  }, [router.pathname]);
+
+  // Handle collapsible toggle
+  const handleCollapsibleToggle = (title) => {
+    setOpenCollapsibles(prev => ({
+      ...prev,
+      [title]: !prev[title]
+    }));
   };
 
-  const handleItemClick = (url) => {
-    setActiveItem(url);
-    // In a real app, you'd also navigate to the URL
-    // using your router (next/router, react-router, etc.)
+  // Handle logout
+  const handleLogout = (e, url) => {
+    if (url === "/dashboard/account/logout") {
+      e.preventDefault();
+      // Add your logout logic here
+      // dispatch(logoutUser());
+      router.push("/login");
+    }
   };
 
-  // Base hover/focus/active styles using your primary color
-  const interactionStyles = "hover:bg-[var(--buttonbg)] focus:bg-[var(--buttonbg)] active:bg-[var(--buttonbg)] data-[state=open]:bg-[var(--buttonbg)] data-[state=active]:bg-[var(--buttonbg)]";
+  // Base styles - removed the interaction styles that were making everything look active
+  const baseButtonStyles = "text-gray-300 hover:bg-[var(--buttonbg)] hover:text-white transition-colors";
+  const activeButtonStyles = "bg-[var(--buttonbg)] text-white";
 
   return (
     <Sidebar
       {...props}
-      className={`bg-black text-white border-r border-gray-800`}
+      className="bg-black text-white border-r border-gray-800"
     >
       <SidebarHeader className="border-b border-gray-800 bg-black">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton 
-              className={`${interactionStyles}`} 
+              className="hover:bg-[var(--buttonbg)] hover:text-white transition-colors" 
               size="lg" 
               asChild
             >
-              <a href="/" className="text-white hover:text-white">
+              <Link href="/" className="text-white hover:text-white">
                 <div className="bg-gray-800 text-white flex aspect-square size-8 items-center justify-center rounded-lg">
                   <GalleryVerticalEnd className="size-4" />
                 </div>
                 <div className="flex flex-col gap-0.5 leading-none">
                   <span className="font-medium text-white">SiraNet</span>
-                  <span className="">v1.0.0</span>
+                  <span className="text-white/60">v1.0.0</span>
                 </div>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -210,49 +251,51 @@ export function AppSidebar({ ...props }) {
       <SidebarContent className="bg-black">
         <SidebarGroup>
           <SidebarMenu>
-            {data.navMain.map((item, index) => {
+            {data.navMain.map((item) => {
               const Icon = item.icon;
               const hasItems = item.items && item.items.length > 0;
-              const isActive = isItemActive(item, item.url);
+              const isActive = isItemActive(item);
+              const isOpen = openCollapsibles[item.title] || isParentActive(item);
               
               return (
                 <SidebarMenuItem key={item.title}>
                   {hasItems ? (
                     // Render collapsible for items with children
                     <Collapsible
-                      defaultOpen={isActive || index === 1}
+                      open={isOpen}
+                      onOpenChange={() => handleCollapsibleToggle(item.title)}
                       className="group/collapsible"
                     >
                       <CollapsibleTrigger asChild>
                         <SidebarMenuButton 
-                          className={`text-gray-300 ${interactionStyles} ${
-                            isActive ? "bg-[var(--buttonbg)] text-white" : ""
-                          }`}
-                          style={isActive ? { backgroundColor: 'var(--buttonbg)' } : {}}
+                          className={`${baseButtonStyles} ${isActive ? activeButtonStyles : ""}`}
                         >
-                          <span>{Icon && <Icon className="size-4" />}</span>
-                          {item.title}{" "}
+                          {Icon && <Icon className="size-4" />}
+                          <span>{item.title}</span>
                           <Plus className="ml-auto text-gray-400 group-data-[state=open]/collapsible:hidden" />
                           <Minus className="ml-auto text-gray-400 group-data-[state=closed]/collapsible:hidden" />
                         </SidebarMenuButton>
                       </CollapsibleTrigger>
                       <CollapsibleContent>
                         <SidebarMenuSub className="bg-black border-l border-gray-800">
-                          {item.items.map((subItem) => (
-                            <SidebarMenuSubItem key={subItem.title}>
-                              <SidebarMenuSubButton
-                                asChild
-                                isActive={isUrlActive(subItem.url)}
-                                className={`text-gray-400 ${interactionStyles} ${
-                                  isUrlActive(subItem.url) ? "text-white" : ""
-                                }`}
-                                style={isUrlActive(subItem.url) ? { backgroundColor: 'var(--buttonbg)' } : {}}
-                                onClick={() => handleItemClick(subItem.url)}
-                              >
-                                <a href={subItem.url}>{subItem.title}</a>
-                              </SidebarMenuSubButton>
-                            </SidebarMenuSubItem>
-                          ))}
+                          {item.items.map((subItem) => {
+                            const isSubActive = isUrlExactlyActive(subItem.url);
+                            return (
+                              <SidebarMenuSubItem key={subItem.title}>
+                                <SidebarMenuSubButton
+                                  asChild
+                                  className={`text-gray-400 hover:bg-[var(--buttonbg)] hover:text-white transition-colors ${
+                                    isSubActive ? activeButtonStyles : ""
+                                  }`}
+                                 
+                                >
+                                  <Link href={subItem.url}>
+                                    {subItem.title}
+                                  </Link>
+                                </SidebarMenuSubButton>
+                              </SidebarMenuSubItem>
+                            );
+                          })}
                         </SidebarMenuSub>
                       </CollapsibleContent>
                     </Collapsible>
@@ -260,16 +303,17 @@ export function AppSidebar({ ...props }) {
                     // Render regular menu button for items without children
                     <SidebarMenuButton 
                       asChild
-                      className={`text-gray-300 ${interactionStyles} ${
-                        isUrlActive(item.url) ? "text-white" : ""
-                      }`}
-                      style={isUrlActive(item.url) ? { backgroundColor: 'var(--buttonbg)' } : {}}
-                      onClick={() => handleItemClick(item.url)}
+                      className={`${baseButtonStyles} ${isActive ? activeButtonStyles : ""}`}
+                      onClick={(e) => {
+                        if (item.url === "/dashboard/account/logout") {
+                          handleLogout(e, item.url);
+                        }
+                      }}
                     >
-                      <a href={item.url}>
-                        <span>{Icon && <Icon className="size-4" />}</span>
-                        {item.title}
-                      </a>
+                      <Link href={item.url}>
+                        {Icon && <Icon className="size-4" />}
+                        <span>{item.title}</span>
+                      </Link>
                     </SidebarMenuButton>
                   )}
                 </SidebarMenuItem>

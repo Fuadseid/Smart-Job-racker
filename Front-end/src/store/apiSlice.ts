@@ -30,5 +30,7 @@ export const apiSlice = createApi({
 
 export const {
   useGetCsrfTokenQuery,
-  useCreateConrtactMutation
+  useCreateConrtactMutation,
+  useSignUpMutation,
+  useLoginMutation
 } = apiSlice;

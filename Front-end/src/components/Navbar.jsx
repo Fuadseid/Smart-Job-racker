@@ -6,6 +6,7 @@ import { Button } from "./ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { useSelector } from "react-redux";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,25 +18,41 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const MENU_ITEMS = [
+// Base menu items
+const BASE_MENU_ITEMS = [
   { label: "Home", href: "/", id: "home" },
   { label: "How it works", href: "/how-it-works", id: "how" },
   { label: "Job Track", href: "/smart", id: "smart" },
   { label: "Contact", href: "/contact", id: "contact", isLink: true },
-  {
-    label: "Get Started",
-    href: "/login",
-    id: "login",
-    isButton: true,
-  },
 ];
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [activeItem, setActiveItem] = useState("Home");
   const [scrolled, setScrolled] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const menuRef = useRef(null);
   const router = useRouter();
+  
+  // Get authentication state from Redux - but only use after mount
+  const { isAuthenticated } = useSelector((state) => state.auth);
+
+  // Set mounted to true after component mounts on client
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Create MENU_ITEMS dynamically based on authentication
+  const MENU_ITEMS = [
+    ...BASE_MENU_ITEMS,
+    {
+      label: !mounted ? "Get Started" : (isAuthenticated ? "Dashboard" : "Get Started"),
+      href: !mounted ? "/login" : (isAuthenticated ? "/dashboard" : "/login"),
+      id: !mounted ? "login" : (isAuthenticated ? "dashboard" : "login"),
+      isButton: true,
+    },
+  ];
+
   const openMenu = () => setIsOpen(!isOpen);
 
   // Handle scroll effect
@@ -72,9 +89,8 @@ function Navbar() {
     };
   }, [isOpen]);
 
-  // Update active section based on scroll position (only for non-link items)
+  // Update active section based on scroll position
   useEffect(() => {
-    // Only run scroll spy on homepage where sections exist
     if (router.pathname !== "/") return;
 
     const handleScrollSpy = () => {
@@ -84,12 +100,10 @@ function Navbar() {
           label: item.label,
         }));
 
-      // Find the current section in viewport
       for (const section of sections) {
         const element = document.getElementById(section.id);
         if (element) {
           const rect = element.getBoundingClientRect();
-          // Check if section is in viewport (with offset for navbar)
           if (rect.top <= 150 && rect.bottom >= 150) {
             setActiveItem(section.label);
             break;
@@ -99,32 +113,30 @@ function Navbar() {
     };
 
     window.addEventListener("scroll", handleScrollSpy);
-    handleScrollSpy(); // Initial check
+    handleScrollSpy();
 
     return () => window.removeEventListener("scroll", handleScrollSpy);
-  }, [router.pathname]);
+  }, [router.pathname, mounted, isAuthenticated]);
 
-  // Update active item based on route for link items
+  // Update active item based on route
   useEffect(() => {
     const currentPath = router.pathname;
     const matchingItem = MENU_ITEMS.find(item => item.href === currentPath);
     if (matchingItem) {
       setActiveItem(matchingItem.label);
     }
-  }, [router.pathname]);
+  }, [router.pathname, mounted, isAuthenticated]);
 
   const handleNavigation = (item) => {
     setActiveItem(item.label);
     setIsOpen(false);
 
     if (item.isLink || item.isButton) {
-      // For link and button items, use Next.js router navigation
       router.push(item.href);
     } else {
-      // For section items, smooth scroll to the section
       const element = document.getElementById(item.id);
       if (element) {
-        const yOffset = -100; // Offset to account for fixed navbar
+        const yOffset = -100;
         const y =
           element.getBoundingClientRect().top + window.pageYOffset + yOffset;
 
@@ -132,8 +144,6 @@ function Navbar() {
           top: y,
           behavior: "smooth",
         });
-      } else {
-        console.warn(`Element with id "${item.id}" not found`);
       }
     }
   };
@@ -149,7 +159,7 @@ function Navbar() {
       <div className="md:flex hidden flex-row border border-white/40 rounded-4xl items-center w-2/3 space-x-16 justify-center p-2 text-white backdrop-blur-sm bg-black/20 transition-all duration-300 hover:border-white/60">
         {MENU_ITEMS.map((item) => (
           <div
-            key={item.label}
+            key={item.id} // Use id instead of label for key to avoid changes
             onClick={() => handleNavigation(item)}
             onKeyDown={(e) =>
               (e.key === "Enter" || e.key === " ") && handleNavigation(item)
@@ -179,7 +189,7 @@ function Navbar() {
               )}
             </span>
 
-            {/* Animated underline for all non-button items (including links) */}
+            {/* Animated underline for all non-button items */}
             {!item.isButton && (
               <span
                 className={`
@@ -193,8 +203,9 @@ function Navbar() {
         ))}
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu - Keep as is */}
       <div className="md:hidden flex flex-col items-center w-full px-4 text-white">
+        {/* Mobile menu code remains the same */}
         <div
           onClick={openMenu}
           onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && openMenu()}
@@ -220,7 +231,7 @@ function Navbar() {
             >
               {MENU_ITEMS.map((item) => (
                 <motion.div
-                  key={item.label}
+                  key={item.id}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.1 }}

@@ -146,6 +146,7 @@ export const {
   pushNotification,
   removeNotifications,
   setLanguage,
+  
 } = authSlice.actions;
 
 export default authSlice.reducer;
