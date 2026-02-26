@@ -72,7 +72,7 @@ export default function HowItWorks() {
         <p className="text-gray-400 mb-6">
           Track every application. Stay organized. Land interviews faster.
         </p>
-        <Button className="px-8 py-6 bg-[var(--buttonbg)] text-white rounded-lg text-lg font-medium hover:brightness-110 transition">
+        <Button className="px-8 py-6 bg-[var(--buttonbg)] text-white rounded-lg text-lg font-medium hover:bg-[var(--hoverbtnbg)] cursor-pointer transition">
           Start Tracking
         </Button>
       </section>
@@ -208,7 +208,7 @@ export default function HowItWorks() {
         <h2 className="text-3xl font-bold mb-4 text-white">
           Start Managing Your Job Search Today
         </h2>
-        <Button className="px-8 py-6 bg-[var(--buttonbg)] text-white rounded-lg text-lg font-medium hover:brightness-110 transition">
+        <Button className="px-8 py-6 bg-[var(--buttonbg)] hover:bg-[var(--hoverbtnbg)] text-white rounded-lg text-lg font-medium hover:brightness-110 transition">
           Create Free Account
         </Button>
       </section>

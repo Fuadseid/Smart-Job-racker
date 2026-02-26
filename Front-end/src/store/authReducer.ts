@@ -5,6 +5,8 @@ import Cookies from "js-cookie";
 interface User {
   id: string;
   name: string;
+  refreshToken: string;
+  refreshTokenExpiration: string;
   email: string;
   token: string;
   type: string;
@@ -18,6 +20,8 @@ interface AuthState {
   isAuthenticated: boolean;
   user: User | null;
   notifications: string[];
+  refreshToken: string;
+  refreshTokenExpiration: string;
   csrf_token: string;
   app_url: string;
   media_url: string;
@@ -60,6 +64,8 @@ export const authSlice = createSlice({
   name: "auth",
   initialState: {
     token: initializeToken(),
+    refreshToken: "",
+    refreshTokenExpiration: "",
     isAuthenticated: initializeAuthenticated(),
     user: initializeUser(),
     notifications: [] as string[],
@@ -68,16 +74,15 @@ export const authSlice = createSlice({
     front_url: "https://test.afro-billboard.com",
      front_url: "https://afro-billboard.com", */
 
-     //media_url: "http://localhost:8000/storage/uploads/",
-     //app_url: "http://localhost:8000/",
-     //front_url: "http://localhost:5173",
-     //upload_url: "http://localhost:8000/api/uploadFile",
+    //media_url: "http://localhost:8000/storage/uploads/",
+    //app_url: "http://localhost:8000/",
+    //front_url: "http://localhost:5173",
+    //upload_url: "http://localhost:8000/api/uploadFile",
 
     upload_url: "https://backend.maid-match.com/api/uploadFile",
     media_url: "http://backend.maid-match.com/storage/uploads/",
     app_url: "http://backend.maid-match.com",
     front_url: "http://maid-match.com",
-    
 
     /*          front_url: "http://localhost:5173",
      */
@@ -93,6 +98,8 @@ export const authSlice = createSlice({
       state.isAuthenticated = true;
       state.user = action.payload;
       state.token = action.payload.token;
+      state.refreshToken = action.payload.refreshToken;
+      state.refreshTokenExpiration = action.payload.refreshTokenExpiration;
       window?.localStorage.setItem("user-info", JSON.stringify(state.user));
       window?.localStorage.setItem("token", state.token);
     },

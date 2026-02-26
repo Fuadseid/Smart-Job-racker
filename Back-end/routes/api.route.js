@@ -3,6 +3,8 @@ const { createJob, getAllJobs, getJobById, searchJobs, updateJob, deleteJob } = 
 const express = require("express");
 const router = express.Router();
 const { CreateConatctController } = require("../controllers/contact.controller");
+const auth = require("../middleware/auth");
+
 router.use("/auth", authRoutes);
 router.post("/create-job", createJob);
 router.get("/jobs", getAllJobs);

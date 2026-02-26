@@ -19,7 +19,7 @@ const tokenSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
-  backlisted:{
+  blacklisted:{
     type: Boolean,
     default:false,
   }

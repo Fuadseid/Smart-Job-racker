@@ -32,7 +32,20 @@ const login = async (req, res) => {
   }
 };
 
+const refreshtoken = async (req, res) => {
+try{
+    const token = await authService.refreshToken(req.body.refreshtoken);
+  res.status(httpStatus.status.OK).send({ ...token });
+}catch(error){
+    res
+      .status(error.statusCode || httpStatus.status.INTERNAL_SERVER_ERROR)
+      .send({ message: error.message });
+}
+};
+
+
 module.exports = {
   register,
   login,
+  refreshtoken
 };
