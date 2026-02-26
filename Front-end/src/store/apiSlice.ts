@@ -3,6 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { authenticationEndpoints } from "./endPoints/authenticationEndpoints";
 import { RootState } from "./store";
 import { contactEndpoints } from "./endPoints/contactEndpoints";
+import { jobEndpoints } from "./endPoints/jobsEndpoints";
 export const apiSlice = createApi({
   reducerPath: "user",
   baseQuery: fetchBaseQuery({
@@ -24,7 +25,8 @@ export const apiSlice = createApi({
   }),
   endpoints: (builder) => ({
     ...authenticationEndpoints(builder),
-    ...contactEndpoints(builder)
+    ...contactEndpoints(builder),
+    ...jobEndpoints(builder),
   }),
 });
 
@@ -32,5 +34,11 @@ export const {
   useGetCsrfTokenQuery,
   useCreateConrtactMutation,
   useSignUpMutation,
-  useLoginMutation
+  useLoginMutation,
+  useGetJobsQuery,
+  useCreateJobsMutation,
+  useGetJobbyIdQuery,
+  useUpdateJobMutation,
+  useDeleteJobMutation,
+  useGetRecentjobQuery
 } = apiSlice;

@@ -18,7 +18,26 @@ const getAllJobs = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
+const getRecentJob = async (req, res) => {
+  try {
+    const recentJobs = await jobservice.getRecentJobs();
+    
+    res.status(200).json({
+      success: true,
+      count: recentJobs.length,
+      data: recentJobs
+    });
+    
+  } catch (error) {
+    console.error("Error fetching recent jobs:", error.message);
+    
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch recent jobs",
+      error: error.message
+    });
+  }
+};
 const getJobById = async (req, res) => {
   try {
     const jobId = req.params.id;
@@ -30,7 +49,7 @@ const getJobById = async (req, res) => {
 };
 const searchJobs = async (req, res) => {
   try {
-    const {term} = req.params;
+    const { term } = req.params;
     const jobs = await jobservice.searchjobs(term);
     res.status(200).json(jobs);
   } catch (error) {
@@ -64,4 +83,5 @@ module.exports = {
   searchJobs,
   updateJob,
   deleteJob,
+  getRecentJob
 };

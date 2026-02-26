@@ -1,5 +1,5 @@
 const authRoutes = require("./auth.route");
-const { createJob, getAllJobs, getJobById, searchJobs, updateJob, deleteJob } = require("../controllers/job.controller");
+const { createJob, getAllJobs, getJobById, searchJobs, updateJob, deleteJob,getRecentJob } = require("../controllers/job.controller");
 const express = require("express");
 const router = express.Router();
 const { CreateConatctController } = require("../controllers/contact.controller");
@@ -11,6 +11,7 @@ router.get("/jobs", getAllJobs);
 router.get("/jobs/:id", getJobById);
 router.get("/search-jobs/:term", searchJobs);
 router.put("/jobs/:id", updateJob);
+router.get('/recent-job',getRecentJob)
 router.delete("/jobs/:id", deleteJob);
 router.post("/contact",CreateConatctController);
 

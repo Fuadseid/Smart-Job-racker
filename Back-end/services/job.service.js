@@ -52,14 +52,25 @@ const searchjobs = async (term) => {
       { position: { $regex: term, $options: "i" } },
       { companyName: { $regex: term, $options: "i" } },
       { location: { $regex: term, $options: "i" } },
-
     ],
   };
 
   const jobs = await job.find(filter);
   return jobs;
 };
+const getRecentJobs = async () => {
+  try {
+    const recentJobs = await job.find()
+      .sort({ createdAt: -1 }) 
+      .limit(5); 
 
+    console.log("5 most recent jobs:", recentJobs);
+    return recentJobs;
+  } catch (error) {
+    console.error("Error fetching recent jobs:", error);
+    throw error;
+  }
+};
 const updateJob = async (jobId, jobData) => {
   try {
     const UpdatedJob = await job.findByIdAndUpdate(jobId, jobData, {
@@ -98,4 +109,5 @@ module.exports = {
   searchjobs,
   updateJob,
   deleteJob,
+  getRecentJobs
 };
