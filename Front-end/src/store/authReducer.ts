@@ -74,15 +74,12 @@ export const authSlice = createSlice({
     front_url: "https://test.afro-billboard.com",
      front_url: "https://afro-billboard.com", */
 
-    //media_url: "http://localhost:8000/storage/uploads/",
-    //app_url: "http://localhost:8000/",
-    //front_url: "http://localhost:5173",
-    //upload_url: "http://localhost:8000/api/uploadFile",
+    media_url: "http://localhost:5000/storage/uploads/",
+    app_url: "http://localhost:5000/",
+    front_url: "http://localhost:3000",
+    upload_url: "http://localhost:5000/api/uploadFile",
 
-    upload_url: "https://backend.maid-match.com/api/uploadFile",
-    media_url: "http://backend.maid-match.com/storage/uploads/",
-    app_url: "http://backend.maid-match.com",
-    front_url: "http://maid-match.com",
+
 
     /*          front_url: "http://localhost:5173",
      */

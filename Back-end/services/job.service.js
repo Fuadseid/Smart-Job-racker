@@ -2,6 +2,7 @@ const job = require("../models/job.models");
 const ApiError = require("../utils/ApiError");
 const httpStatus = require("http-status");
 const user = require("../models/user.model");
+const savedJobModels = require("../models/savedJob.models");
 const createJob = async (jobData) => {
   try {
     const userId = await user.findById(jobData.userId);
@@ -60,9 +61,7 @@ const searchjobs = async (term) => {
 };
 const getRecentJobs = async () => {
   try {
-    const recentJobs = await job.find()
-      .sort({ createdAt: -1 }) 
-      .limit(5); 
+    const recentJobs = await job.find().sort({ createdAt: -1 }).limit(5);
 
     console.log("5 most recent jobs:", recentJobs);
     return recentJobs;
@@ -87,6 +86,47 @@ const updateJob = async (jobId, jobData) => {
     );
   }
 };
+const saveJobs = async (jobId, userId) => {
+  try {
+    const existing = savedJobModels.findOne({
+      userId: userId,
+      jobId: jobId,
+    });
+    if (!existing) {
+      return {
+        success: false,
+        message: "Job already saved",
+      };
+    }
+    const saved = await savedJobModels.create({
+      userId: userId,
+      jobId: jobId,
+    });
+    return {
+      success: true,
+      data: saved,
+    };
+  } catch (error) {
+    throw new ApiError(
+      httpStatus.status.INTERNAL_SERVER_ERROR,
+      `error: ${error}`,
+    );
+  }
+};
+const unsaveJob = async (saved_id) => {
+  const deleted = await savedJobModels.findByIdAndDelete(saved_id);
+
+  if (!deleted) {
+    return {
+      success: false,
+      message: "Saved job not found",
+    };
+  }
+
+  return {
+    success: true,
+  };
+};
 const deleteJob = async (jobId) => {
   try {
     const deletedJob = await job.findByIdAndDelete(jobId);
@@ -101,6 +141,21 @@ const deleteJob = async (jobId) => {
     );
   }
 };
+  const getSavedJobs = async (userId) => {
+    try {
+      const savedJobs = await savedJobModels
+        .find({userId})
+        .populate("jobId")
+        .sort({ createdAt: -1 });
+
+      return savedJobs;
+    } catch (error) {
+      throw new ApiError(
+        httpStatus.status.INTERNAL_SERVER_ERROR,
+        `error: ${error}`,
+      );
+    }
+  };
 
 module.exports = {
   createJob,
@@ -109,5 +164,8 @@ module.exports = {
   searchjobs,
   updateJob,
   deleteJob,
-  getRecentJobs
+  getRecentJobs,
+  saveJobs,
+  unsaveJob,
+  getSavedJobs,
 };

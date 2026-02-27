@@ -21,20 +21,19 @@ const getAllJobs = async (req, res) => {
 const getRecentJob = async (req, res) => {
   try {
     const recentJobs = await jobservice.getRecentJobs();
-    
+
     res.status(200).json({
       success: true,
       count: recentJobs.length,
-      data: recentJobs
+      data: recentJobs,
     });
-    
   } catch (error) {
     console.error("Error fetching recent jobs:", error.message);
-    
+
     res.status(500).json({
       success: false,
       message: "Failed to fetch recent jobs",
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -75,6 +74,35 @@ const deleteJob = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+const saveJobController = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { jobId } = req.body;
+
+    const result = await jobservice.saveJobs(jobId, userId);
+
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const unSavedJobController = async (req, res) => {
+  const savedId = req.params.id;
+
+  const result = await jobservice.unsaveJob(savedId);
+
+  res.status(200).json(result);
+};
+const getSavedJob = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const result = await jobservice.getSavedJobs(userId);
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 
 module.exports = {
   createJob,
@@ -83,5 +111,8 @@ module.exports = {
   searchJobs,
   updateJob,
   deleteJob,
-  getRecentJob
+  getRecentJob,
+  getSavedJob,
+  unSavedJobController,
+  saveJobController,
 };

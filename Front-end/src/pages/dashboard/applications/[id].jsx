@@ -23,6 +23,8 @@ import {
   ChevronRight,
   AlertTriangle,
   X,
+  Copy,
+  Check,
 } from "lucide-react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -33,6 +35,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
+import { useSelector } from "react-redux";
 
 export default function JobDetails() {
   const router = useRouter();
@@ -40,7 +43,10 @@ export default function JobDetails() {
   const [isIdReady, setIsIdReady] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [copied, setCopied] = useState(false);
   const modalContentRef = useRef(null);
+  const {front_url} = useSelector((state)=>state.auth)
   
   // Form state for editing
   const [editFormData, setEditFormData] = useState({
@@ -59,7 +65,7 @@ export default function JobDetails() {
   // RTK Mutations
   const [updateJob, { isLoading: isUpdating }] = useUpdateJobMutation();
   const [deleteJob, { isLoading: isDeleting }] = useDeleteJobMutation();
-
+  
   // Only run query when id is available
   const {
     data: job,
@@ -78,7 +84,7 @@ export default function JobDetails() {
 
   // Prevent body scroll when modal is open
   useEffect(() => {
-    if (showEditModal || showDeleteModal) {
+    if (showEditModal || showDeleteModal || showShareModal) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "unset";
@@ -87,7 +93,7 @@ export default function JobDetails() {
     return () => {
       document.body.style.overflow = "unset";
     };
-  }, [showEditModal, showDeleteModal]);
+  }, [showEditModal, showDeleteModal, showShareModal]);
 
   // Populate edit form when job data is available
   useEffect(() => {
@@ -175,6 +181,28 @@ export default function JobDetails() {
     } catch (error) {
       console.error("Failed to delete job:", error);
       toast.error("Failed to delete application. Please try again.");
+    }
+  };
+
+  // Generate shareable link
+  const getShareableLink = () => {
+    return `${front_url}/dashboard/applications/${id}`;
+  };
+
+  // Handle copy to clipboard
+  const handleCopyLink = async () => {
+    const link = getShareableLink();
+    try {
+      await navigator.clipboard.writeText(link);
+      setCopied(true);
+      toast.success("Link copied to clipboard!");
+      
+      // Reset copied state after 2 seconds
+      setTimeout(() => {
+        setCopied(false);
+      }, 2000);
+    } catch (err) {
+      toast.error("Failed to copy link");
     }
   };
 
@@ -312,6 +340,78 @@ export default function JobDetails() {
     <Dashboard>
       <Toaster position="top-right" richColors />
 
+      {/* Share Modal */}
+      <AnimatePresence>
+        {showShareModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/80 z-[9999] backdrop-blur-sm flex items-center justify-center p-4"
+            onClick={() => setShowShareModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-gradient-to-br from-gray-900 to-black border border-white/10 rounded-2xl max-w-lg w-full"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-6">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+                    <Share2 className="h-5 w-5 text-cyan-400" />
+                    Share Application
+                  </h2>
+                  <button
+                    onClick={() => setShowShareModal(false)}
+                    className="p-2 hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
+                  >
+                    <X className="h-5 w-5 text-white/60" />
+                  </button>
+                </div>
+
+                <p className="text-white/60 mb-4">
+                  Share this link to allow others to view this application:
+                </p>
+
+                <div className="flex items-center gap-2 mb-6">
+                  <div className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white/80 font-mono text-sm truncate">
+                    {getShareableLink()}
+                  </div>
+                  <button
+                    onClick={handleCopyLink}
+                    className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors cursor-pointer group"
+                    title="Copy to clipboard"
+                  >
+                    {copied ? (
+                      <Check className="h-5 w-5 text-green-400" />
+                    ) : (
+                      <Copy className="h-5 w-5 text-white/60 group-hover:text-white" />
+                    )}
+                  </button>
+                </div>
+
+                <div className="flex gap-3">
+                  <Button
+                    onClick={() => setShowShareModal(false)}
+                    className="flex-1 bg-white/10 hover:bg-white/20 text-white rounded-lg py-2 cursor-pointer"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleCopyLink}
+                    className="flex-1 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-lg py-2 cursor-pointer"
+                  >
+                    {copied ? "Copied!" : "Copy Link"}
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Edit Modal */}
       <AnimatePresence>
         {showEditModal && (
@@ -329,7 +429,7 @@ export default function JobDetails() {
               exit={{ scale: 0.9, opacity: 0 }}
               className="bg-gradient-to-br from-gray-900 to-black border border-white/10 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
-              onWheel={(e) => e.stopPropagation()} // Add this line to allow wheel scrolling
+              onWheel={(e) => e.stopPropagation()}
             >
               <div className="sticky top-0 bg-black/50 backdrop-blur-sm border-b border-white/10 p-4 flex justify-between items-center z-10">
                 <h2 className="text-xl font-semibold text-white">
@@ -584,6 +684,7 @@ export default function JobDetails() {
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
+              onClick={() => setShowShareModal(true)}
               className="p-2 text-white/60 hover:text-white transition-colors cursor-pointer"
               title="Share"
             >
@@ -878,4 +979,3 @@ export default function JobDetails() {
     </Dashboard>
   );
 }
-
