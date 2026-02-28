@@ -10,7 +10,9 @@ const {
   getSavedJob,
   unSavedJobController,
   saveJobController,
-  getisSavedJob
+  getisSavedJob,
+  getInterviewedJob,
+  getOfferJob
 } = require("../controllers/job.controller");
 const express = require("express");
 const router = express.Router();
@@ -20,8 +22,11 @@ const {
 const auth = require("../middleware/auth");
 
 router.use("/auth", authRoutes);
-router.post("/create-job", createJob);
-router.get("/jobs", getAllJobs);
+router.post("/create-job",auth, createJob);
+router.get("/jobs",auth, getAllJobs);
+router.get("/jobs/interviewed",auth,getInterviewedJob);
+
+router.get("/jobs/offered",auth,getOfferJob);
 router.post("/save-job",auth,saveJobController),
 router.delete("/unsave-job/:id",auth,unSavedJobController)
 router.get("/get-all-saved",auth,getSavedJob)

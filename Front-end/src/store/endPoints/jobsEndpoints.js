@@ -50,5 +50,11 @@ export const jobEndpoints = (builder) => ({
       method:"POST",
       body:data
     })
+  }),
+  getInterviwedJob:builder.query({
+    query:()=>"/jobs/interviewed"
+  }),
+    getOfferedJob:builder.query({
+    query:()=>"/jobs/offered"
   })
 });

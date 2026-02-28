@@ -46,5 +46,9 @@ export const {
   useGetAllsavedQuery,
   useLazyGetAllsavedQuery,
   useGetIssavedMutation,
-  
+  useGetInterviwedJobQuery,
+  useGetOfferedJobQuery,
+  useLazyGetJobsQuery,
+  useLazyGetInterviwedJobQuery,
+  useLazyGetOfferedJobQuery,
 } = apiSlice;

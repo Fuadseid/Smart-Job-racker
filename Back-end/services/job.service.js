@@ -3,16 +3,19 @@ const ApiError = require("../utils/ApiError");
 const httpStatus = require("http-status");
 const user = require("../models/user.model");
 const savedJobModels = require("../models/savedJob.models");
-const createJob = async (jobData) => {
+const createJob = async (jobData, userid) => {
   try {
-    const userId = await user.findById(jobData.userId);
+    const userId = await user.findById(userid);
     if (!userId) {
       throw new ApiError(
         httpStatus.status.BAD_REQUEST,
         "User ID is must be valid to post a job",
       );
     }
-    const newJob = await job.create(jobData);
+    const newJob = await job.create({
+      ...jobData,
+      userId: userid,
+    });
     return newJob;
   } catch (error) {
     throw new ApiError(
@@ -21,9 +24,11 @@ const createJob = async (jobData) => {
     );
   }
 };
-const getAllJobs = async () => {
+const getAllJobs = async (userId) => {
   try {
-    const jobs = await job.find();
+    const jobs = await job.find({
+      userId: userId,
+    });
     return jobs;
   } catch (error) {
     throw new ApiError(
@@ -88,24 +93,35 @@ const updateJob = async (jobId, jobData) => {
 };
 const saveJobs = async (jobId, userId) => {
   try {
-    const existing = savedJobModels.findOne({
-      userId: userId,
-      jobId: jobId,
+    const jobcreatedbyuser = await job.find({
+      _id:jobId,
+      userId: userId, 
     });
-    if (!existing) {
+    if (!jobcreatedbyuser) {
+      throw new ApiError(
+        httpStatus.status.UNAUTHORIZED,
+        "Job is not belongs to user",
+      );
+    } else {
+      const existing = savedJobModels.findOne({
+        userId: userId,
+        jobId: jobId,
+      });
+      if (!existing) {
+        return {
+          success: false,
+          message: "Job already saved",
+        };
+      }
+      const saved = await savedJobModels.create({
+        userId: userId,
+        jobId: jobId,
+      });
       return {
-        success: false,
-        message: "Job already saved",
+        success: true,
+        data: saved,
       };
     }
-    const saved = await savedJobModels.create({
-      userId: userId,
-      jobId: jobId,
-    });
-    return {
-      success: true,
-      data: saved,
-    };
   } catch (error) {
     throw new ApiError(
       httpStatus.status.INTERNAL_SERVER_ERROR,
@@ -145,7 +161,7 @@ const getSavedJobs = async (userId) => {
   try {
     const savedJobs = await savedJobModels
       .find({ userId })
-      .populate("jobId")
+      .populate({ path: "jobId", match: { userId: userId } })
       .sort({ createdAt: -1 });
 
     return savedJobs;
@@ -170,6 +186,34 @@ const getSavedJob = async (jobId, userId) => {
     );
   }
 };
+const InterviewedJobs = async (userId) => {
+  try {
+    const interviewedJobs = await job.find({
+      userId: userId,
+      status: "interview",
+    });
+    return interviewedJobs
+  } catch (error) {
+    throw new ApiError(
+      httpStatus.status.INTERNAL_SERVER_ERROR,
+      `error: ${error}`,
+    );
+  }
+};
+const OfferJobs = async (userId) => {
+  try {
+    const interviewedJobs = await job.find({
+      userId: userId,
+      status: "offer",
+    });
+    return interviewedJobs
+  } catch (error) {
+    throw new ApiError(
+      httpStatus.status.INTERNAL_SERVER_ERROR,
+      `error: ${error}`,
+    );
+  }
+};
 
 module.exports = {
   createJob,
@@ -182,5 +226,7 @@ module.exports = {
   saveJobs,
   unsaveJob,
   getSavedJobs,
-  getSavedJob
+  getSavedJob,
+  InterviewedJobs,
+  OfferJobs
 };

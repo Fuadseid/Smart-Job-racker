@@ -3,7 +3,8 @@ const jobservice = require("../services/job.service");
 const createJob = async (req, res) => {
   try {
     const jobData = req.body;
-    const newJob = await jobservice.createJob(jobData);
+    const userId = req.user.id;
+    const newJob = await jobservice.createJob(jobData, userId);
     res.status(201).json(newJob);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -11,8 +12,9 @@ const createJob = async (req, res) => {
 };
 
 const getAllJobs = async (req, res) => {
+  const userId = req.user.id;
   try {
-    const jobs = await jobservice.getAllJobs();
+    const jobs = await jobservice.getAllJobs(userId);
     res.status(200).json(jobs);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -125,7 +127,24 @@ const getisSavedJob = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
+const getInterviewedJob = async (req, res) => {
+  const userId = req.user.id;
+  try {
+    const interviewedJob =await jobservice.InterviewedJobs(userId);
+    res.status(200).json(interviewedJob);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+const getOfferJob = async (req, res) => {
+  const userId = req.user.id;
+  try {
+    const interviewedJob =await jobservice.OfferJobs(userId);
+    res.status(200).json(interviewedJob);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 module.exports = {
   createJob,
   getAllJobs,
@@ -138,4 +157,6 @@ module.exports = {
   unSavedJobController,
   saveJobController,
   getisSavedJob,
+  getInterviewedJob,
+  getOfferJob
 };
