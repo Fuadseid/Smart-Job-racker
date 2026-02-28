@@ -42,6 +42,13 @@ export const jobEndpoints = (builder) => ({
     }),
   }),
   getAllsaved: builder.query({
-    query: () => "get-all-saved",
+    query: () => "/get-all-saved",
   }),
+  getIssaved: builder.mutation({
+    query:(data)=>({
+      url:"/get-is-saved",
+      method:"POST",
+      body:data
+    })
+  })
 });

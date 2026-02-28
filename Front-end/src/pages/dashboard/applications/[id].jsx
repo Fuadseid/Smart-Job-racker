@@ -1,7 +1,14 @@
 "use client";
 
 import Dashboard from "@/pagecomponents/Dashboard";
-import { useGetJobbyIdQuery, useUpdateJobMutation, useDeleteJobMutation } from "@/store/apiSlice";
+import {
+  useGetJobbyIdQuery,
+  useUpdateJobMutation,
+  useDeleteJobMutation,
+  useSaveJobMutation,
+  useGetIssavedMutation,
+  useUnsaveJobMutation,
+} from "@/store/apiSlice";
 import { useRouter } from "next/router";
 import {
   Briefcase,
@@ -32,9 +39,9 @@ import { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
+import { Textarea } from "@/components/ui/textarea";
 import { useSelector } from "react-redux";
 
 export default function JobDetails() {
@@ -46,8 +53,59 @@ export default function JobDetails() {
   const [showShareModal, setShowShareModal] = useState(false);
   const [copied, setCopied] = useState(false);
   const modalContentRef = useRef(null);
-  const {front_url} = useSelector((state)=>state.auth)
-  
+  const { front_url } = useSelector((state) => state.auth);
+  const { user } = useSelector((state) => state.auth);
+  const [userId, setUserId] = useState("");
+  const [isSaved, setIsSaved] = useState(false);
+  const [savedId, setSavedId] = useState(null);
+  const copyTimeoutRef = useRef(null);
+
+  // Check if job is saved mutation
+  const [checkIfSaved, { isLoading: isCheckingSaved }] = useGetIssavedMutation();
+  const [saveJob, { isLoading: isSaving }] = useSaveJobMutation();
+  const [unsaveJob, { isLoading: isUnsaving }] = useUnsaveJobMutation();
+
+  useEffect(() => {
+    setUserId(user?.id);
+  }, [user]);
+
+  // Check if job is saved when component loads or userId/job changes
+  useEffect(() => {
+    const checkSavedStatus = async () => {
+      if (!userId || !id) return;
+      
+      try {
+        const response = await checkIfSaved({ 
+          userId: userId, 
+          jobId: id 
+        }).unwrap();
+        
+        // Response is { isSaved: true, savedId: "69a24f2a9bba8212f9735fe2" }
+        setIsSaved(response.isSaved);
+        setSavedId(response.savedId);
+      } catch (error) {
+        console.error("Error checking saved status:", error);
+        setIsSaved(false);
+        setSavedId(null);
+      }
+    };
+
+    checkSavedStatus();
+  }, [userId, id, checkIfSaved]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (copyTimeoutRef.current) {
+        clearTimeout(copyTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  console.log("user id", userId);
+  console.log("isSaved", isSaved);
+  console.log("savedId", savedId);
+
   // Form state for editing
   const [editFormData, setEditFormData] = useState({
     position: "",
@@ -65,7 +123,7 @@ export default function JobDetails() {
   // RTK Mutations
   const [updateJob, { isLoading: isUpdating }] = useUpdateJobMutation();
   const [deleteJob, { isLoading: isDeleting }] = useDeleteJobMutation();
-  
+
   // Only run query when id is available
   const {
     data: job,
@@ -113,7 +171,101 @@ export default function JobDetails() {
     }
   }, [job]);
 
-  // Format date function
+  const handleSave = async () => {
+    if (!userId) {
+      toast.error("Please log in to save jobs");
+      return;
+    }
+
+    if (!job?._id) {
+      toast.error("Job information not available");
+      return;
+    }
+
+    try {
+      const response = await saveJob({
+        userId: userId,
+        jobId: job._id,
+      }).unwrap();
+      
+      // Check the response from your controller
+      if (response.saved === "already saved") {
+        // Job was already saved
+        toast.info("Job is already saved");
+        // Refresh the saved status to get the savedId
+        const savedStatus = await checkIfSaved({ 
+          userId: userId, 
+          jobId: id 
+        }).unwrap();
+        setIsSaved(savedStatus.isSaved);
+        setSavedId(savedStatus.savedId);
+      } else {
+        // Job was successfully saved
+        setIsSaved(true);
+        // If the response contains the saved job ID, use it
+        if (response.data?._id) {
+          setSavedId(response.data._id);
+        } else {
+          // Otherwise refresh to get the savedId
+          const savedStatus = await checkIfSaved({ 
+            userId: userId, 
+            jobId: id 
+          }).unwrap();
+          setSavedId(savedStatus.savedId);
+        }
+        toast.success("Job saved successfully!");
+      }
+      
+    } catch (error) {
+      console.log("Error saving job:", error);
+      
+      // Check if it's an error message from your service
+      if (error?.data?.message === "Job already saved") {
+        // Refresh the saved status to get the savedId
+        const savedStatus = await checkIfSaved({ 
+          userId: userId, 
+          jobId: id 
+        }).unwrap();
+        setIsSaved(savedStatus.isSaved);
+        setSavedId(savedStatus.savedId);
+        toast.info("Job is already saved");
+      } else {
+        toast.error("Failed to save job. Please try again.");
+      }
+    }
+  };
+
+  // Function to unsave a job using the savedId
+  const handleUnsave = async () => {
+    if (!userId || !savedId) {
+      toast.error("Cannot unsave job: missing information");
+      return;
+    }
+    
+    try {
+      // The unsave endpoint uses the savedId in the URL
+      await unsaveJob(savedId).unwrap();
+      
+      // Update state
+      setIsSaved(false);
+      setSavedId(null);
+      
+      toast.success("Job removed from saved jobs");
+    } catch (error) {
+      console.error("Error removing saved job:", error);
+      toast.error("Failed to remove job");
+    }
+  };
+
+  // Combined handler for save/unsave
+  const handleSaveToggle = async () => {
+    if (isSaved) {
+      await handleUnsave();
+    } else {
+      await handleSave();
+    }
+  };
+
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
     const date = new Date(dateString);
@@ -144,7 +296,7 @@ export default function JobDetails() {
   // Handle edit submit
   const handleEditSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
       const result = await updateJob({
         id: job._id,
@@ -189,17 +341,23 @@ export default function JobDetails() {
     return `${front_url}/dashboard/applications/${id}`;
   };
 
-  // Handle copy to clipboard
+  // Handle copy to clipboard - FIXED TIMEOUT
   const handleCopyLink = async () => {
     const link = getShareableLink();
     try {
       await navigator.clipboard.writeText(link);
       setCopied(true);
       toast.success("Link copied to clipboard!");
-      
-      // Reset copied state after 2 seconds
-      setTimeout(() => {
+
+      // Clear any existing timeout
+      if (copyTimeoutRef.current) {
+        clearTimeout(copyTimeoutRef.current);
+      }
+
+      // Set new timeout
+      copyTimeoutRef.current = setTimeout(() => {
         setCopied(false);
+        copyTimeoutRef.current = null;
       }, 2000);
     } catch (err) {
       toast.error("Failed to copy link");
@@ -276,7 +434,7 @@ export default function JobDetails() {
   }, [id, isIdReady, isJobLoading, job, error]);
 
   // Show loading while waiting for id or data
-  if (!isIdReady || isJobLoading) {
+  if (!isIdReady || isJobLoading || isCheckingSaved) {
     return (
       <Dashboard>
         <Toaster position="top-right" richColors />
@@ -676,10 +834,18 @@ export default function JobDetails() {
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
-              className="p-2 text-white/60 hover:text-white transition-colors cursor-pointer"
-              title="Save to favorites"
+              onClick={handleSaveToggle}
+              disabled={isSaving || isUnsaving}
+              className={`p-2 transition-colors cursor-pointer ${
+                isSaved 
+                  ? "text-red-500 hover:text-red-600" 
+                  : "text-white/60 hover:text-white"
+              }`}
+              title={isSaved ? "Remove from saved jobs" : "Save to favorites"}
             >
-              <Heart className="h-5 w-5" />
+              <Heart 
+                className={`h-5 w-5 ${isSaved ? "fill-current" : ""}`} 
+              />
             </motion.button>
             <motion.button
               whileHover={{ scale: 1.1 }}

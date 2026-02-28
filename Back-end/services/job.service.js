@@ -141,21 +141,35 @@ const deleteJob = async (jobId) => {
     );
   }
 };
-  const getSavedJobs = async (userId) => {
-    try {
-      const savedJobs = await savedJobModels
-        .find({userId})
-        .populate("jobId")
-        .sort({ createdAt: -1 });
+const getSavedJobs = async (userId) => {
+  try {
+    const savedJobs = await savedJobModels
+      .find({ userId })
+      .populate("jobId")
+      .sort({ createdAt: -1 });
 
-      return savedJobs;
-    } catch (error) {
-      throw new ApiError(
-        httpStatus.status.INTERNAL_SERVER_ERROR,
-        `error: ${error}`,
-      );
-    }
-  };
+    return savedJobs;
+  } catch (error) {
+    throw new ApiError(
+      httpStatus.status.INTERNAL_SERVER_ERROR,
+      `error: ${error}`,
+    );
+  }
+};
+const getSavedJob = async (jobId, userId) => {
+  try {
+    const savedJob = await savedJobModels.findOne({
+      jobId: jobId,
+      userId: userId,
+    });
+    return savedJob;
+  } catch (error) {
+    throw new ApiError(
+      httpStatus.status.INTERNAL_SERVER_ERROR,
+      `error: ${error}`,
+    );
+  }
+};
 
 module.exports = {
   createJob,
@@ -168,4 +182,5 @@ module.exports = {
   saveJobs,
   unsaveJob,
   getSavedJobs,
+  getSavedJob
 };

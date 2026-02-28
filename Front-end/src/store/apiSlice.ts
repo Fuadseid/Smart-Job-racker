@@ -40,5 +40,11 @@ export const {
   useGetJobbyIdQuery,
   useUpdateJobMutation,
   useDeleteJobMutation,
-  useGetRecentjobQuery
+  useGetRecentjobQuery,
+  useSaveJobMutation,
+  useUnsaveJobMutation,
+  useGetAllsavedQuery,
+  useLazyGetAllsavedQuery,
+  useGetIssavedMutation,
+  
 } = apiSlice;

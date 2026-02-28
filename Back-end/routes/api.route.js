@@ -10,6 +10,7 @@ const {
   getSavedJob,
   unSavedJobController,
   saveJobController,
+  getisSavedJob
 } = require("../controllers/job.controller");
 const express = require("express");
 const router = express.Router();
@@ -24,6 +25,7 @@ router.get("/jobs", getAllJobs);
 router.post("/save-job",auth,saveJobController),
 router.delete("/unsave-job/:id",auth,unSavedJobController)
 router.get("/get-all-saved",auth,getSavedJob)
+router.post("/get-is-saved",auth,getisSavedJob)
 router.get("/jobs/:id", getJobById);
 router.get("/search-jobs/:term", searchJobs);
 router.put("/jobs/:id", updateJob);
@@ -32,3 +34,4 @@ router.delete("/jobs/:id", deleteJob);
 router.post("/contact", CreateConatctController);
 
 module.exports = router;
+  

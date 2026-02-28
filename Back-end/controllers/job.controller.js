@@ -79,6 +79,14 @@ const saveJobController = async (req, res) => {
     const userId = req.user.id;
     const { jobId } = req.body;
 
+    // Check if job already saved
+    const existing = await jobservice.getSavedJob(jobId, userId);
+
+    if (existing) {
+      return res.status(200).json({ saved: "already saved" });
+    }
+
+    // Save the job
     const result = await jobservice.saveJobs(jobId, userId);
 
     res.status(200).json(result);
@@ -86,7 +94,6 @@ const saveJobController = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
 const unSavedJobController = async (req, res) => {
   const savedId = req.params.id;
 
@@ -104,6 +111,21 @@ const getSavedJob = async (req, res) => {
   }
 };
 
+const getisSavedJob = async (req, res) => {
+  const userId = req.user.id;
+  const { jobId } = req.body;
+  try {
+    const result = await jobservice.getSavedJob(jobId, userId);
+
+    res.status(200).json({
+      isSaved: !!result,
+      savedId: result ? result._id : null,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 module.exports = {
   createJob,
   getAllJobs,
@@ -115,4 +137,5 @@ module.exports = {
   getSavedJob,
   unSavedJobController,
   saveJobController,
+  getisSavedJob,
 };
