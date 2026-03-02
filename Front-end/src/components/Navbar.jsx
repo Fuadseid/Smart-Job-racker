@@ -161,14 +161,14 @@ function Navbar() {
     setActiveItem(item.label);
     setIsOpen(false);
 
-    // Handle button items (Get Started/Dashboard)
-    if (item.isButton) {
+    // ===== FIXED: Handle link items (Contact) FIRST =====
+    if (item.isLink) {
       router.push(item.href);
       return;
     }
 
-    // Handle link items (Contact)
-    if (item.isLink) {
+    // Handle button items (Get Started/Dashboard)
+    if (item.isButton) {
       router.push(item.href);
       return;
     }

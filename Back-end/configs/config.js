@@ -26,6 +26,8 @@ module.exports = {
     },
     google:{
         clientId:value.GOOGLE_CLIENT_ID,
-        clientSecret:value.GOOGLE_CLIENT_SECRET
-    }
+        clientSecret:value.GOOGLE_CLIENT_SECRET,
+        callback:value.GOOGLE_CALL_BACK
+    },
+    hfkey:value.HF_API_KEY
 }

@@ -4,6 +4,7 @@ import { authenticationEndpoints } from "./endPoints/authenticationEndpoints";
 import { RootState } from "./store";
 import { contactEndpoints } from "./endPoints/contactEndpoints";
 import { jobEndpoints } from "./endPoints/jobsEndpoints";
+import { resumeEndpoints } from "./endPoints/resumeEndpoints";
 export const apiSlice = createApi({
   reducerPath: "user",
   baseQuery: fetchBaseQuery({
@@ -27,6 +28,7 @@ export const apiSlice = createApi({
     ...authenticationEndpoints(builder),
     ...contactEndpoints(builder),
     ...jobEndpoints(builder),
+    ...resumeEndpoints(builder),
   }),
 });
 
@@ -51,4 +53,5 @@ export const {
   useLazyGetJobsQuery,
   useLazyGetInterviwedJobQuery,
   useLazyGetOfferedJobQuery,
+  useUploadResumeMutation
 } = apiSlice;

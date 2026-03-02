@@ -32,7 +32,9 @@ export function LoginForm({ className, ...props }) {
   const router = useRouter();
   const dispatch = useDispatch();
   const [mounted, setMounted] = useState(false);
-  
+  const handleGoogleLogin = () => {
+  window.location.href = "http://localhost:5000/api/auth/google";
+};
   // Form state
   const [formData, setFormData] = useState({
     email: "",
@@ -267,6 +269,7 @@ export function LoginForm({ className, ...props }) {
             <Button 
               variant="outline" 
               type="button" 
+              onClick={handleGoogleLogin}
               className="w-full bg-white/10 border-white/20 text-white hover:bg-white/20 transition-colors"
               disabled={isLoading}
             >

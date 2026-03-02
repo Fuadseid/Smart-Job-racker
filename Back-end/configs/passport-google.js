@@ -3,7 +3,6 @@ const userModel = require("../models/user.model");
 const config = require("./config");
 const authService = require("../services/auth.service");
 
-
 const googleOptons = {
   clientID: config.google.clientId,
   clientSecret: config.google.clientSecret,
@@ -12,14 +11,18 @@ const googleOptons = {
 const googleVerify = async (accessToken, refreshToken, profile, done) => {
   try {
     const email = profile.emails[0].value;
-    let user = await  userModel.findOne({ email });
+    let user = await userModel.findOne({ email });
     if (!user) {
       user = await authService.registerUser({
         name: profile.displayName,
-        email: profile.emails[0].value,
+        email: email,
         googleId: profile.id,
         provider: "google",
       });
+    }
+    if (refreshToken) {
+      user.googleRefreshToken = refreshToken;
+      await user.save();
     }
     done(null, user);
   } catch (error) {

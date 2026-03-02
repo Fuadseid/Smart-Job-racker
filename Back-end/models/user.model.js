@@ -31,6 +31,9 @@ const userSchema = new mongoose.Schema(
     googleId: {
       type: String,
     },
+    googleRefreshToken: {
+      type: String,
+    },
     password: {
       type: String,
       required: function () {
@@ -46,10 +49,10 @@ const userSchema = new mongoose.Schema(
         }
       },
     },
-    emailverifiedat:{
-      type:Date,
-      default:null,
-    }
+    emailverifiedat: {
+      type: Date,
+      default: null,
+    },
   },
   { timestamps: true },
 );
