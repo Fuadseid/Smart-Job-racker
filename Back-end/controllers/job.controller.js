@@ -145,6 +145,21 @@ const getOfferJob = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+// Add this to your job controller file (job.controller.js)
+
+const getDashboardStats = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const stats = await jobservice.getDashboardStats(userId);
+    res.status(200).json(stats);
+  } catch (error) {
+    res.status(500).json({ 
+      success: false,
+      error: error.message 
+    });
+  }
+};
 module.exports = {
   createJob,
   getAllJobs,
@@ -158,5 +173,6 @@ module.exports = {
   saveJobController,
   getisSavedJob,
   getInterviewedJob,
-  getOfferJob
+  getOfferJob,
+  getDashboardStats
 };

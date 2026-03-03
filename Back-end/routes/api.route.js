@@ -12,7 +12,8 @@ const {
   saveJobController,
   getisSavedJob,
   getInterviewedJob,
-  getOfferJob
+  getOfferJob,
+  getDashboardStats
 } = require("../controllers/job.controller");
 const express = require("express");
 const upload = require('../middleware/upload');
@@ -28,7 +29,7 @@ router.use("/auth", authRoutes);
 router.post("/create-job",auth, createJob);
 router.get("/jobs",auth, getAllJobs);
 router.get("/jobs/interviewed",auth,getInterviewedJob);
-
+router.get("/dashboard-stats",auth,getDashboardStats);
 router.get("/jobs/offered",auth,getOfferJob);
 router.post('/analyze', upload.single('resume'), analyzeResume);
 router.post("/save-job",auth,saveJobController),

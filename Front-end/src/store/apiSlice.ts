@@ -53,5 +53,6 @@ export const {
   useLazyGetJobsQuery,
   useLazyGetInterviwedJobQuery,
   useLazyGetOfferedJobQuery,
-  useUploadResumeMutation
+  useUploadResumeMutation,
+  useGetDashboardstatusQuery
 } = apiSlice;

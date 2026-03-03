@@ -56,5 +56,8 @@ export const jobEndpoints = (builder) => ({
   }),
     getOfferedJob:builder.query({
     query:()=>"/jobs/offered"
+  }),
+     getDashboardstatus:builder.query({
+    query:()=>"/dashboard-stats"
   })
 });
