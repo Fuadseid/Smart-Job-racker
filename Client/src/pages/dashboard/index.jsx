@@ -166,12 +166,7 @@ function Index() {
             Rejected
           </span>
         );
-      case "saved":
-        return (
-          <span className="px-2 py-1 bg-purple-500/20 text-purple-400 rounded-full text-xs font-medium">
-            Saved
-          </span>
-        );
+     
       default:
         return (
           <span className="px-2 py-1 bg-gray-500/20 text-gray-400 rounded-full text-xs font-medium">
@@ -267,10 +262,7 @@ function Index() {
             <p className="text-white/40 text-sm mb-1">Total Jobs</p>
             <p className="text-2xl font-bold text-white">{stats.total}</p>
           </div>
-          <div className="bg-purple-500/10 border border-purple-500/20 rounded-xl p-4">
-            <p className="text-purple-400/60 text-sm mb-1">Saved</p>
-            <p className="text-2xl font-bold text-purple-400">{stats.saved}</p>
-          </div>
+          
           <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4">
             <p className="text-blue-400/60 text-sm mb-1">Applied</p>
             <p className="text-2xl font-bold text-blue-400">{stats.applied}</p>
