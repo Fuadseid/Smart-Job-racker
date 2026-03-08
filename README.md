@@ -293,6 +293,4 @@ Fuad Seid - fuaddbus@gmail.com
 
 Project Link: [https://github.com/Fuadseid/Smart-Job-racker](https://github.com/Fuadseid/Smart-Job-racker)
 
-## 📝 License
 
-This project is licensed under the MIT License.
